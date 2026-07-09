@@ -7,6 +7,8 @@
   </p>
 
   <p>
+    <a href="https://creditiq-xn3q.onrender.com/"><b>🚀 View Live Application</b></a>
+    ·
     <a href="https://www.kaggle.com/datasets/wordsforthewise/lending-club">View Dataset (Lending Club)</a>
     ·
     <a href="#-architecture--methodology">View Architecture</a>
