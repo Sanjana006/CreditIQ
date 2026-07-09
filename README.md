@@ -33,13 +33,18 @@ Traditional underwriting often relies on rigid rule engines and manual review, w
 
 ---
 
-## 🌍 The "Indian Context" Transformation
-This model was trained on the publicly available **[US Lending Club Dataset](https://www.kaggle.com/datasets/wordsforthewise/lending-club)**, which contains over a decade of real-world loan default data. 
+## 🇮🇳 India Market Context & Ind AS 109 ECL Framework
 
-To demonstrate this architecture in an **Indian Banking Context**, the backend dynamically applies **Purchasing Power Parity (PPP)** transformations (approx. 1 USD = ₹23.9 PPP). 
-- When an underwriter inputs an applicant's salary in ₹ Lakhs, the system scales it to the mathematical equivalent in the US training distribution.
-- **Why do this?** Because banking data is heavily protected, real Indian loan default datasets are not publicly available. This PPP transformation allows us to demonstrate a fully functional, mathematically sound underwriting app.
-- **Production Readiness:** For a real Indian lending company, **the architecture remains exactly the same.** You simply swap the Lending Club dataset with the bank's internal historical data, change the word "FICO" to "CIBIL", retrain the pipeline using the provided `train_stage2.py` script, and the entire app works out of the box.
+This architecture strictly aligns with the **Ind AS 109 Expected Credit Loss (ECL)** framework, which mandates that financial institutions estimate forward-looking Probability of Default (PD) rather than just looking at historical losses.
+
+Because banking data is highly protected and real Indian default datasets are rarely public, the core ML engine was trained on the robust **US Lending Club Dataset**. To make this mathematically viable for the Indian market, the system applies **Purchasing Power Parity (PPP) transformations** (approx. 1 USD = ₹23.9 PPP) to seamlessly map an applicant's Indian Rupee (₹) socioeconomic status to the US risk distribution.
+
+Furthermore, the frontend dynamically calculates critical Indian banking metrics:
+- **FOIR (Fixed Obligation to Income Ratio):** Ensures the applicant's existing monthly obligations do not exceed the RBI's recommended limits (typically 50%).
+- **City Tier Risk Assessment:** Dynamically applies risk multipliers (e.g., Tier 1, Tier 2) based on the macroeconomic stability and cost of living in the borrower's location.
+- **Priority Sector Lending (RBI):** Flags whether the loan purpose (e.g., MSME, Agriculture, Education) qualifies for Indian Priority Sector lending targets.
+
+**Production Readiness:** For a real Indian NBFC or Bank, the architecture remains exactly the same. You simply swap the dataset with internal historical data, retrain using the provided script, and the entire app—including the Ind AS 109 ECL dashboard—works out of the box.
 
 ---
 
