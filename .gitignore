@@ -1,0 +1,23 @@
+# Environments
+venv/
+env/
+.env
+
+# MacOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Large Data & Models
+# Uncomment these if you don't want to push massive files to GitHub!
+data/*.csv
+data/*.db
+models/*.pkl
+outputs/

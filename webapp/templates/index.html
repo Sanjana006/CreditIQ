@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CreditIQ — Credit Risk Analytics Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
+<header class="header">
+  <div class="container header-inner">
+    <div class="brand">
+      <span class="brand-icon">◆</span>
+      <span class="brand-name">CreditIQ</span>
+      <span class="brand-tag">Risk Analytics</span>
+    </div>
+    <nav class="nav">
+      <a href="#decision" class="nav-link">Loan Decision Engine</a>
+      <a href="#portfolio" class="nav-link">Portfolio Analytics</a>
+      <span class="nav-badge">India Market</span>
+    </nav>
+  </div>
+</header>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-label">End-to-End Credit Risk Analytics</div>
+    <h1 class="hero-title">Data-Driven Loan Decisioning<br>for Modern Lending</h1>
+    <p class="hero-sub">
+      Powered by XGBoost + SHAP Explainability · Ind AS 109 ECL Framework · India Market Context
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="hero-stat-num">60,000</span><span class="hero-stat-label">Loans Analysed</span></div>
+      <div class="hero-stat-div"></div>
+      <div class="hero-stat"><span class="hero-stat-num">20.0%</span><span class="hero-stat-label">Portfolio NPA Rate</span></div>
+      <div class="hero-stat-div"></div>
+      <div class="hero-stat"><span class="hero-stat-num">XGBoost</span><span class="hero-stat-label">Scoring Model</span></div>
+      <div class="hero-stat-div"></div>
+      <div class="hero-stat"><span class="hero-stat-num">SHAP</span><span class="hero-stat-label">Explainable AI</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ DECISION ENGINE ═══════════════════════════ -->
+<section class="section" id="decision">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Module 01</div>
+        <h2 class="section-title">Loan Decision Engine</h2>
+        <p class="section-desc">Enter borrower details to generate an instant credit risk assessment with explainability.</p>
+      </div>
+    </div>
+
+    <div class="decision-grid">
+      <!-- ── FORM ── -->
+      <div class="card">
+        <div class="card-header" style="flex-wrap: wrap; gap: 8px;">
+          <span class="card-title">Borrower Application</span>
+          <div>
+            <span class="card-badge">India Market</span>
+            <span class="card-badge" title="Purchasing Power Parity (1 USD = ₹23.9) maps Indian income to the US-based credit model" style="background:#e0e7ff; color:#4338ca; cursor:help;">PPP Adjusted</span>
+          </div>
+        </div>
+
+        <form id="loanForm">
+          <div class="form-section-label">Loan Details</div>
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">Loan Amount (₹ Lakhs)</label>
+                <span class="tooltip-icon" data-tooltip="The total loan amount the borrower is requesting.">?</span>
+              </div>
+              <input class="form-input" type="number" id="loan_amnt_inr" min="0.5" max="9" step="0.25" value="3.5" placeholder="e.g. 3.5" />
+              <span class="form-hint">₹0.5L – ₹9L &nbsp;·&nbsp; Maps to $2K – $38K in model</span>
+            </div>
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">Loan Term</label>
+                <span class="tooltip-icon" data-tooltip="The number of months over which the loan will be repaid.">?</span>
+              </div>
+              <select class="form-input" id="term">
+                <option value="36">36 Months (Short Term)</option>
+                <option value="60">60 Months (Long Term)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">Loan Purpose</label>
+                <span class="tooltip-icon" data-tooltip="The primary reason for taking the loan.">?</span>
+              </div>
+              <select class="form-input" id="purpose">
+                <option value="debt_consolidation">Personal Loan – Debt Consolidation</option>
+                <option value="credit_card">Credit Card Refinance</option>
+                <option value="home_improvement">Home Renovation Loan</option>
+                <option value="small_business">MSME Working Capital</option>
+                <option value="major_purchase">Consumer Durable Loan</option>
+                <option value="medical">Medical Emergency Loan</option>
+                <option value="educational">Education Loan</option>
+                <option value="car">Vehicle Finance Loan</option>
+                <option value="house">Housing Finance Loan</option>
+                <option value="renewable_energy">Green Finance Loan</option>
+                <option value="other">Other Personal Loan</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">City Tier</label>
+                <span class="tooltip-icon" data-tooltip="Borrower's city category. Tier affects risk weights in Indian context.">?</span>
+              </div>
+              <select class="form-input" id="city_tier">
+                <option value="Tier 1">Tier 1 (Metro)</option>
+                <option value="Tier 2" selected>Tier 2 (Urban)</option>
+                <option value="Tier 3">Tier 3 (Semi-Urban / Rural)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-section-label" style="margin-top:20px;">Borrower Profile</div>
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">Annual Income (₹ Lakhs)</label>
+                <span class="tooltip-icon" data-tooltip="Gross annual income of the borrower before taxes.">?</span>
+              </div>
+              <input class="form-input" type="number" id="annual_inc_inr" min="4" max="36" step="0.5" value="8" placeholder="e.g. 8" />
+              <span class="form-hint">₹4L – ₹36L &nbsp;·&nbsp; Maps to $17K – $151K in model</span>
+            </div>
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">Monthly EMI Obligations (₹)</label>
+                <span class="tooltip-icon" data-tooltip="Total monthly loan and credit card payments. Used to calculate FOIR.">?</span>
+              </div>
+              <input class="form-input" type="number" id="monthly_emi" min="0" step="500" value="5000" placeholder="e.g. 5000" />
+              <span class="form-hint">Used to compute FOIR</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">Employment Length (years)</label>
+                <span class="tooltip-icon" data-tooltip="Number of years the borrower has been employed.">?</span>
+              </div>
+              <input class="form-input" type="number" id="emp_length" min="0" max="40" step="1" value="5" />
+            </div>
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">Home Ownership</label>
+                <span class="tooltip-icon" data-tooltip="Does the borrower rent, own, or have a mortgage on their primary residence?">?</span>
+              </div>
+              <select class="form-input" id="home_ownership">
+                <option value="RENT">Renting</option>
+                <option value="OWN">Owned</option>
+                <option value="MORTGAGE" selected>Mortgage</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-section-label" style="margin-top:20px;">Credit Profile</div>
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">CIBIL / FICO Score</label>
+                <span class="tooltip-icon" data-tooltip="Credit score indicating creditworthiness. Models treat CIBIL similarly to FICO.">?</span>
+              </div>
+              <input class="form-input" type="number" id="fico" min="300" max="850" step="1" value="700" />
+              <span class="form-hint">300 – 850</span>
+            </div>
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">Debt-to-Income Ratio (%)</label>
+                <span class="tooltip-icon" data-tooltip="Percentage of gross monthly income that goes towards paying debts.">?</span>
+              </div>
+              <input class="form-input" type="number" id="dti" min="0" max="100" step="0.5" value="18" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">Revolving Utilisation (%)</label>
+                <span class="tooltip-icon" data-tooltip="The percentage of available credit card limits currently being used.">?</span>
+              </div>
+              <input class="form-input" type="number" id="revol_util" min="0" max="100" step="1" value="40" />
+              <span class="form-hint">0% – 100%</span>
+            </div>
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">Revolving Balance (₹ Thousands)</label>
+                <span class="tooltip-icon" data-tooltip="Total outstanding balance on credit cards and open lines of credit.">?</span>
+              </div>
+              <input class="form-input" type="number" id="revol_bal_k" min="0" max="2000" step="10" value="100" />
+              <span class="form-hint">₹0 – ₹2,000K &nbsp;·&nbsp; Maps to $0 – $84K in model</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">Delinquencies (last 2 yrs)</label>
+                <span class="tooltip-icon" data-tooltip="Number of times borrower was 30+ days past due on a payment in the last 2 years.">?</span>
+              </div>
+              <input class="form-input" type="number" id="delinq_2yrs" min="0" max="20" step="1" value="0" />
+            </div>
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">Public Records</label>
+                <span class="tooltip-icon" data-tooltip="Number of derogatory public records (e.g., bankruptcies or tax liens).">?</span>
+              </div>
+              <input class="form-input" type="number" id="pub_rec" min="0" max="20" step="1" value="0" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">Open Accounts</label>
+                <span class="tooltip-icon" data-tooltip="The number of currently open credit lines in the borrower's credit file.">?</span>
+              </div>
+              <input class="form-input" type="number" id="open_acc" min="0" max="100" step="1" value="8" />
+            </div>
+            <div class="form-group">
+              <div class="label-wrap">
+                <label class="form-label">Total Accounts</label>
+                <span class="tooltip-icon" data-tooltip="The total number of credit lines ever opened by the borrower.">?</span>
+              </div>
+              <input class="form-input" type="number" id="total_acc" min="0" max="200" step="1" value="15" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group" style="grid-column: span 2;">
+              <div class="label-wrap">
+                <label class="form-label">Credit History (years)</label>
+                <span class="tooltip-icon" data-tooltip="Number of years since the borrower's very first credit line was opened.">?</span>
+              </div>
+              <input class="form-input" type="number" id="credit_history_years" min="0" max="50" step="1" value="10" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary" id="submitBtn">
+            <span id="btnText">Assess Credit Risk</span>
+            <span id="btnSpinner" class="spinner" style="display:none;"></span>
+          </button>
+        </form>
+      </div>
+
+      <!-- ── RESULTS ── -->
+      <div id="resultsCol">
+        <div class="result-placeholder" id="placeholder">
+          <div class="placeholder-icon">◆</div>
+          <div class="placeholder-title">Awaiting Assessment</div>
+          <div class="placeholder-text">Complete the borrower application form and click <strong>Assess Credit Risk</strong> to generate an instant decision with SHAP explainability.</div>
+        </div>
+
+        <!-- Decision Card -->
+        <div class="card" id="decisionCard" style="display:none;">
+          <div class="decision-header" id="decisionHeader">
+            <div>
+              <div class="decision-verdict" id="decisionVerdict"></div>
+              <div class="decision-sub" id="decisionSub"></div>
+            </div>
+            <div class="decision-badge" id="decisionBadge"></div>
+          </div>
+
+          <!-- PD Gauge -->
+          <div class="gauge-section">
+            <div class="gauge-label">Probability of Default</div>
+            <div class="gauge-bar-track">
+              <div class="gauge-bar-fill" id="gaugeFill"></div>
+            </div>
+            <div class="gauge-markers">
+              <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+            </div>
+            <div class="gauge-value" id="gaugeValue"></div>
+          </div>
+
+          <!-- Key Metrics -->
+          <div class="metrics-row" id="metricsRow"></div>
+        </div>
+
+        <!-- Indian Context Card -->
+        <div class="card" id="indiaCard" style="display:none; margin-top:16px;">
+          <div class="card-header">
+            <span class="card-title">India Market Context</span>
+            <span class="card-badge">Ind AS 109</span>
+          </div>
+          <p class="shap-desc">Financial figures are converted using the <strong>World Bank PPP rate (1 USD = ₹23.9)</strong> to accurately map the borrower's socioeconomic status to the underlying US risk model.</p>
+          <div class="india-grid" id="indiaGrid"></div>
+        </div>
+
+        <!-- SHAP Card -->
+        <div class="card" id="shapCard" style="display:none; margin-top:16px;">
+          <div class="card-header">
+            <span class="card-title">Risk Factor Breakdown (SHAP)</span>
+            <span class="card-badge">Explainable AI</span>
+          </div>
+          <p class="shap-desc">Bars show each factor's contribution to the default probability. Red increases risk; blue decreases risk.</p>
+          <div class="shap-chart-wrap">
+            <canvas id="shapChart" height="300"></canvas>
+          </div>
+
+          <!-- Narrative -->
+          <div class="narrative-block" id="narrativeBlock" style="display:none;">
+            <div class="narrative-label">Model Interpretation</div>
+            <p class="narrative-text" id="narrativeText"></p>
+          </div>
+
+          <!-- Recommendations -->
+          <div class="rec-block" id="recBlock" style="display:none;">
+            <div class="rec-block-header">
+              <span class="rec-block-title">⚑ Underwriter Recommendations</span>
+              <span class="rec-block-sub">Actions to improve this application's risk profile</span>
+            </div>
+            <div id="recList" class="rec-items"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ PORTFOLIO ANALYTICS ═══════════════════════════ -->
+<section class="section section-alt" id="portfolio">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Module 02</div>
+        <h2 class="section-title">Portfolio Risk Analytics</h2>
+        <p class="section-desc">A structured analysis of 60,000 historical loans — understanding where risk lives, who defaults, and what drives losses.</p>
+      </div>
+    </div>
+
+    <!-- ── KPI STRIP ── -->
+    <div class="kpi-strip" id="kpiStrip">
+      <div class="kpi-card kpi-load">Loading...</div>
+    </div>
+
+    <!-- ── STORY 1: Portfolio Health ── -->
+    <div class="story-block">
+      <div class="story-header">
+        <span class="story-num">01</span>
+        <div>
+          <h3 class="story-title">Where is the Risk Concentrated?</h3>
+          <p class="story-text">Not all borrowers carry equal risk. Our model segments the portfolio into five risk bands, each with distinct default behaviour. The largest risk exposure sits in the <strong>Moderate band</strong> — a critical zone that requires careful underwriting scrutiny.</p>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-card-title">Risk Band Distribution</div>
+            <div class="chart-card-sub">Share of portfolio by risk segment</div>
+          </div>
+          <div class="chart-wrap" style="height:260px">
+            <canvas id="riskBandChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-card-title">Default Rate by Risk Band</div>
+            <div class="chart-card-sub">Actual default % within each segment</div>
+          </div>
+          <div class="chart-wrap" style="height:260px">
+            <canvas id="rbDefaultChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-card-title">Portfolio Exposure by Band</div>
+            <div class="chart-card-sub">Loan exposure in ₹ Crore</div>
+          </div>
+          <div class="chart-wrap" style="height:260px">
+            <canvas id="rbExposureChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STORY 2: Borrower Credit Quality ── -->
+    <div class="story-block">
+      <div class="story-header">
+        <span class="story-num">02</span>
+        <div>
+          <h3 class="story-title">Credit Score is the Strongest Predictor</h3>
+          <p class="story-text">Borrowers with a CIBIL / FICO score below 670 default at nearly three times the rate of those above 740. A high DTI compounds the risk further — the data confirms that dual stress (low score + high obligations) is the clearest early-warning signal.</p>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-card-title">Default Rate by CIBIL / FICO Band</div>
+            <div class="chart-card-sub">Higher score = lower default</div>
+          </div>
+          <div class="chart-wrap" style="height:260px">
+            <canvas id="ficoDefaultChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-card-title">Default Rate by DTI Ratio</div>
+            <div class="chart-card-sub">Rising debt obligations increase risk</div>
+          </div>
+          <div class="chart-wrap" style="height:260px">
+            <canvas id="dtiDefaultChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-card-title">Default Rate by Income Segment</div>
+            <div class="chart-card-sub">Income acts as a risk buffer</div>
+          </div>
+          <div class="chart-wrap" style="height:260px">
+            <canvas id="incDefaultChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STORY 3: Product & Purpose Risk ── -->
+    <div class="story-block">
+      <div class="story-header">
+        <span class="story-num">03</span>
+        <div>
+          <h3 class="story-title">Product Mix Shapes the Risk Profile</h3>
+          <p class="story-text">Loan purpose reveals borrower intent and stress levels. <strong>Small business (MSME)</strong> and <strong>personal loans</strong> carry disproportionately high default rates relative to their volume, while home-related and vehicle loans show stronger repayment discipline.</p>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-card chart-card-wide">
+          <div class="chart-card-header">
+            <div class="chart-card-title">Default Rate by Loan Purpose</div>
+            <div class="chart-card-sub">India-mapped loan categories · % of loans defaulted</div>
+          </div>
+          <div class="chart-wrap" style="height:280px">
+            <canvas id="purposeDefaultChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-card-title">Default by Home Ownership</div>
+            <div class="chart-card-sub">Asset ownership as risk indicator</div>
+          </div>
+          <div class="chart-wrap" style="height:280px">
+            <canvas id="homeDefaultChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STORY 4: Underwriting Recommendation ── -->
+    <div class="recommendation-block">
+      <div class="rec-header">
+        <span class="story-num">04</span>
+        <div>
+          <h3 class="story-title">Underwriting Recommendations</h3>
+          <p class="story-text">Derived from model output and portfolio analysis — aligned with RBI prudential norms.</p>
+        </div>
+      </div>
+      <div class="rec-grid">
+        <div class="rec-card rec-approve">
+          <div class="rec-card-label">✓ Approve</div>
+          <ul class="rec-list">
+            <li>CIBIL Score ≥ 720</li>
+            <li>DTI &lt; 35% &amp; FOIR &lt; 50%</li>
+            <li>Zero delinquencies (24 months)</li>
+            <li>Income verified (Source / Full)</li>
+            <li>Revolving utilisation &lt; 50%</li>
+            <li>Model PD &lt; 35%</li>
+          </ul>
+        </div>
+        <div class="rec-card rec-review">
+          <div class="rec-card-label">⚑ Manual Review</div>
+          <ul class="rec-list">
+            <li>CIBIL Score 680 – 720</li>
+            <li>DTI 35–45% or FOIR 50–60%</li>
+            <li>1 delinquency in 24 months</li>
+            <li>Employment &lt; 2 years</li>
+            <li>Revolving utilisation 50–75%</li>
+            <li>Model PD 35–60%</li>
+          </ul>
+        </div>
+        <div class="rec-card rec-decline">
+          <div class="rec-card-label">✗ Decline</div>
+          <ul class="rec-list">
+            <li>CIBIL Score &lt; 680</li>
+            <li>DTI &gt; 45% or FOIR &gt; 60%</li>
+            <li>≥ 2 delinquencies in 24 months</li>
+            <li>Public record on file</li>
+            <li>Revolving utilisation &gt; 75%</li>
+            <li>Model PD &gt; 60%</li>
+          </ul>
+        </div>
+        <div class="rec-card rec-ecl">
+          <div class="rec-card-label">₹ Ind AS 109 — ECL Stages</div>
+          <ul class="rec-list">
+            <li><strong>Stage 1</strong> — DPD 0–29 · 12-month ECL</li>
+            <li><strong>Stage 2</strong> — DPD 30–89 · Lifetime ECL</li>
+            <li><strong>Stage 3</strong> — DPD 90+ / NPA · Lifetime ECL</li>
+            <li>LGD: 55% unsecured · 45% MSME</li>
+            <li>ECL = PD × LGD × EAD</li>
+            <li>Aligns with RBI Prudential Framework 2019</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <span class="brand-icon">◆</span>
+      <span class="brand-name">CreditIQ</span>
+    </div>
+    <div class="footer-text">
+      End-to-End Credit Risk Scoring &amp; Portfolio Analytics · XGBoost + SHAP · Ind AS 109 ECL · India Market Context<br>
+      Dataset: Lending Club (60,000 loans) · Model: XGBoost Classifier · Explainability: SHAP TreeExplainer
+    </div>
+  </div>
+</footer>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
