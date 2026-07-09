@@ -41,6 +41,23 @@ To demonstrate this architecture in an **Indian Banking Context**, the backend d
 
 ---
 
+## 📈 Exploratory Data Analysis & SQL Portfolio Analytics
+
+Before modeling the credit risk, extensive **Exploratory Data Analysis (EDA)** and **SQL-based Portfolio Analytics** were performed to understand macro trends in the data. You can explore the detailed queries and statistical distributions in `notebooks/03_SQL_Portfolio_Analytics.ipynb`.
+
+### Analytics Snapshots
+*(Click to expand the images)*
+
+<p align="center">
+  <img src="images/Screenshot%202026-07-09%20at%2023.55.56.png" width="800" alt="Analysis Snapshot 1" style="border-radius:8px; border: 1px solid #ddd; margin-bottom: 10px;"/>
+  <br/>
+  <img src="images/Screenshot%202026-07-09%20at%2023.56.11.png" width="800" alt="Analysis Snapshot 2" style="border-radius:8px; border: 1px solid #ddd; margin-bottom: 10px;"/>
+  <br/>
+  <img src="images/Screenshot%202026-07-09%20at%2023.56.27.png" width="800" alt="Analysis Snapshot 3" style="border-radius:8px; border: 1px solid #ddd;"/>
+</p>
+
+---
+
 ## 🏗 Architecture & Methodology
 
 ### 1. Stage 1: The Pre-Screener (Reject Inference Mitigation)
@@ -58,8 +75,16 @@ The UI takes the inputs, hits the Flask `/api/predict` endpoint, un-wraps the ca
 
 ---
 
-## ❓ Frequently Asked Questions (FAQs)
+## 📊 Model Performance & Technical Highlights
 
+- **Champion Model**: XGBoost Classifier tuned with `scale_pos_weight` to aggressively penalize the minority class, ensuring the model prioritizes identifying true loan defaults despite the heavy natural class imbalance.
+- **Evaluation Metric**: Optimized for **ROC-AUC (~0.71)** and Recall over raw accuracy. For credit risk, missing a default (False Negative) is vastly more expensive to the bank than falsely declining a good loan (False Positive).
+- **Probability Calibration**: Tree-based algorithms often produce raw confidence scores rather than true probabilities. This architecture routes the raw XGBoost output through `CalibratedClassifierCV` using **Isotonic Regression**. This strictly ensures that when the model outputs a 60% PD, 60% of applicants in that bracket historically default.
+- **Feature Pipeline**: Missing data is handled via median/mode imputation, and categorical features are transformed using `OneHotEncoder`. The entire flow is securely encapsulated inside an `sklearn` Pipeline to completely prevent data leakage during testing.
+
+---
+
+## ❓ FAQs (Model & Methodology)
 
 **Q: Is the model predicting whether a loan will be *received* (approved), or whether it will *default*?**
 > **A:** The model predicts the **Probability of Default (PD)** after a loan is disbursed. It is designed to be used *during* the underwriting phase to help the bank decide whether to approve or reject the loan based on the predicted risk.
