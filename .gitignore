@@ -19,5 +19,5 @@ __pycache__/
 # Uncomment these if you don't want to push massive files to GitHub!
 data/*.csv
 data/*.db
-models/*.pkl
+# models/*.pkl
 outputs/
