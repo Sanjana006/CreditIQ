@@ -102,6 +102,12 @@ The UI takes the inputs, hits the Flask `/api/predict` endpoint, un-wraps the ca
 **Q: You trained this on US bank data but built the app for the Indian market. Won't this be questioned? Is it valid?**
 > **A:** This project is a demonstration of a highly scalable, production-grade **machine learning architecture**, not a final localized economic model. To make the US-trained model work logically with Indian Rupees (₹), we apply **Purchasing Power Parity (PPP)** transformations. While the exact economic behaviors differ between the US and India, the fundamental engineering architecture—the XGBoost pipelines, isotonic calibration, SHAP explainability, and the Flask backend—is completely agnostic. An Indian bank simply needs to swap out the dataset with their own, and the entire system operates perfectly.
 
+**Q: The original dataset has over 23 Lakh (2.3 Million) accepted loans. Why did you only analyze/train on a 60,000 row sample?**
+> **A:** This was a deliberate architectural decision based on **Statistical Diminishing Returns** and **Computational Feasibility**. 
+> 1. **Diminishing Returns:** In machine learning, a model's learning curve flattens out after seeing tens of thousands of representative examples. Feeding it 2 million more rows increases training time exponentially but provides almost zero additional predictive accuracy.
+> 2. **Stratified Sampling:** By taking a strict stratified sample, we mathematically preserved the exact default rates, risk bands, and feature distributions of the massive 23 Lakh dataset.
+> 3. **SHAP Constraints:** SHAP explainer trees are incredibly computationally heavy. Running full SHAP analysis on 2.3 million rows would require a Databricks/Spark enterprise cluster, which is outside the scope of a local portfolio project.
+
 ---
 
 ## 🚧 Limitations & Future Work
