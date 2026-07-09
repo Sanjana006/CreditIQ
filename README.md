@@ -58,9 +58,8 @@ The UI takes the inputs, hits the Flask `/api/predict` endpoint, un-wraps the ca
 
 ---
 
-## ❓ Frequently Asked Questions (FAQs) & Defenses
+## ❓ Frequently Asked Questions (FAQs)
 
-If presenting this project in an academic or professional setting, these are the critical design decisions you should be prepared to defend:
 
 **Q: Is the model predicting whether a loan will be *received* (approved), or whether it will *default*?**
 > **A:** The model predicts the **Probability of Default (PD)** after a loan is disbursed. It is designed to be used *during* the underwriting phase to help the bank decide whether to approve or reject the loan based on the predicted risk.
