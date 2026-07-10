@@ -322,27 +322,22 @@ function renderKPIs(kpis) {
     <div class="kpi-card kpi-accent">
       <div class="kpi-label">Total Loans Analysed</div>
       <div class="kpi-value">${kpis.total_loans}</div>
-      <div class="kpi-sub">Historical loan portfolio</div>
-    </div>
-    <div class="kpi-card kpi-accent-red">
-      <div class="kpi-label">Total Defaults (NPA)</div>
-      <div class="kpi-value">${kpis.defaults}</div>
-      <div class="kpi-sub">Actual loan defaults</div>
+      <div class="kpi-sub">Historical test set portfolio</div>
     </div>
     <div class="kpi-card kpi-accent-amber">
-      <div class="kpi-label">Portfolio NPA Rate</div>
+      <div class="kpi-label">Actual NPA Rate</div>
       <div class="kpi-value">${kpis.npa_rate}</div>
-      <div class="kpi-sub">Gross NPA ratio</div>
-    </div>
-    <div class="kpi-card kpi-accent-green">
-      <div class="kpi-label">Average Model PD</div>
-      <div class="kpi-value">${kpis.avg_pd}</div>
-      <div class="kpi-sub">Mean probability of default</div>
+      <div class="kpi-sub">Gross default ratio</div>
     </div>
     <div class="kpi-card kpi-accent-slate">
       <div class="kpi-label">Portfolio Exposure</div>
       <div class="kpi-value">${kpis.total_exposure}</div>
-      <div class="kpi-sub">PPP-adjusted estimate</div>
+      <div class="kpi-sub">Total capital at risk (PPP)</div>
+    </div>
+    <div class="kpi-card kpi-accent-red">
+      <div class="kpi-label">Expected Credit Loss (ECL)</div>
+      <div class="kpi-value">${kpis.ecl_crore}</div>
+      <div class="kpi-sub">Ind AS 109 modeled loss estimate</div>
     </div>
   `;
 }

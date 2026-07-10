@@ -414,8 +414,11 @@ def build_portfolio_stats():
     total = len(df)
     defaults = int(df["Actual_Default"].sum())
     npa_rate = round(defaults / total * 100, 2)
-    avg_pd   = round(df["Probability"].mean() * 100, 2)
     total_exposure = round(df["loan_amnt"].sum() / 1e7, 2)   # ₹ Crore (PPP)
+    
+    # Calculate Expected Credit Loss (ECL = PD * EAD * LGD) assuming 50% LGD
+    ecl_total = (df["Probability"] * df["loan_amnt"] * 0.50).sum()
+    ecl_crore = round(ecl_total / 1e7, 2)
 
     # Risk band counts
     rb = df["Risk_Band"].value_counts().to_dict()
@@ -497,10 +500,9 @@ def build_portfolio_stats():
     return {
         "kpis": {
             "total_loans": f"{total:,}",
-            "defaults": f"{defaults:,}",
             "npa_rate": f"{npa_rate}%",
-            "avg_pd": f"{avg_pd}%",
-            "total_exposure": f"₹{total_exposure} Cr"
+            "total_exposure": f"₹{total_exposure} Cr",
+            "ecl_crore": f"₹{ecl_crore} Cr"
         },
         "risk_bands":    rb,
         "purpose_default": purpose_default.to_dict(orient="records"),

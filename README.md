@@ -85,9 +85,10 @@ The UI takes the inputs, hits the Flask `/api/predict` endpoint, un-wraps the ca
 ## 📊 Model Performance & Technical Highlights
 
 - **Champion Model**: XGBoost Classifier tuned with `scale_pos_weight` to aggressively penalize the minority class, ensuring the model prioritizes identifying true loan defaults despite the heavy natural class imbalance.
-- **Evaluation Metric**: Optimized for **ROC-AUC (~0.71)** and Recall over raw accuracy. For credit risk, missing a default (False Negative) is vastly more expensive to the bank than falsely declining a good loan (False Positive).
+- **Evaluation Metric**: Optimized for **ROC-AUC (~0.70)** and Recall over raw accuracy. For credit risk, missing a default (False Negative) is vastly more expensive to the bank than falsely declining a good loan (False Positive). The final decision boundary incorporates strict threshold tuning (e.g., 0.20-0.30 on calibrated probabilities) to prioritize a high recall rate.
 - **Probability Calibration**: Tree-based algorithms often produce raw confidence scores rather than true probabilities. This architecture routes the raw XGBoost output through `CalibratedClassifierCV` using **Isotonic Regression**. This strictly ensures that when the model outputs a 60% PD, 60% of applicants in that bracket historically default.
 - **Feature Pipeline**: Missing data is handled via median/mode imputation, and categorical features are transformed using `OneHotEncoder`. The entire flow is securely encapsulated inside an `sklearn` Pipeline to completely prevent data leakage during testing.
+- **Training Scale**: The model is trained on the full cleaned dataset of **~1.34 Million** historical loans (80/20 split), leveraging parallel processing to capture the most nuanced patterns in minority default events.
 
 ---
 
@@ -102,11 +103,8 @@ The UI takes the inputs, hits the Flask `/api/predict` endpoint, un-wraps the ca
 **Q: You trained this on US bank data but built the app for the Indian market. Won't this be questioned? Is it valid?**
 > **A:** This project is a demonstration of a highly scalable, production-grade **machine learning architecture**, not a final localized economic model. To make the US-trained model work logically with Indian Rupees (₹), we apply **Purchasing Power Parity (PPP)** transformations. While the exact economic behaviors differ between the US and India, the fundamental engineering architecture—the XGBoost pipelines, isotonic calibration, SHAP explainability, and the Flask backend—is completely agnostic. An Indian bank simply needs to swap out the dataset with their own, and the entire system operates perfectly.
 
-**Q: The original dataset has over 23 Lakh (2.3 Million) accepted loans. Why did you only analyze/train on a 60,000 row sample?**
-> **A:** This was a deliberate architectural decision based on **Statistical Diminishing Returns** and **Computational Feasibility**. 
-> 1. **Diminishing Returns:** In machine learning, a model's learning curve flattens out after seeing tens of thousands of representative examples. Feeding it 2 million more rows increases training time exponentially but provides almost zero additional predictive accuracy.
-> 2. **Stratified Sampling:** By taking a strict stratified sample, we mathematically preserved the exact default rates, risk bands, and feature distributions of the massive 23 Lakh dataset.
-> 3. **SHAP Constraints:** SHAP explainer trees are incredibly computationally heavy. Running full SHAP analysis on 2.3 million rows would require a Databricks/Spark enterprise cluster, which is outside the scope of a local portfolio project.
+**Q: The original dataset has over 23 Lakh (2.3 Million) accepted loans. Why is the final modeling dataset ~13.4 Lakh rows?**
+> **A:** The raw dataset contains 2.3 million rows, but rigorous data hygiene is required for credit risk. We strictly removed "Current" loans (where the final default status is unknown), dropped columns with massive null values or data leakage (information not available at the time of underwriting), and handled severe outliers. This filtering yields a highly robust, fully resolved dataset of **~1.34 Million loans**. The XGBoost pipeline trains on this entire cleaned dataset to ensure it learns the absolute most from rare default patterns without hitting artificial sampling limits.
 
 ---
 
