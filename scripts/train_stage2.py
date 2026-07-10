@@ -145,12 +145,7 @@ print(f"Class distribution:\n{df['is_default'].value_counts(normalize=True).roun
 # ---------------------------------------------------------------------------
 # 4. Stratified Sample (300k rows for tractable training)
 # ---------------------------------------------------------------------------
-df_model, _ = train_test_split(
-    df,
-    train_size=300_000,
-    stratify=df["is_default"],
-    random_state=42,
-)
+df_model = df
 
 # ---------------------------------------------------------------------------
 # 5. Features & Train/Test Split
@@ -198,16 +193,16 @@ preprocessor = ColumnTransformer([
 # 7. Model Comparison
 # ---------------------------------------------------------------------------
 MODELS = {
-    "Baseline": DummyClassifier(strategy="most_frequent"),
+    # "Baseline": DummyClassifier(strategy="most_frequent"),
 
-    "Logistic Regression": LogisticRegression(
-        max_iter=1000, class_weight="balanced", random_state=42
-    ),
+    # "Logistic Regression": LogisticRegression(
+    #     max_iter=1000, class_weight="balanced", random_state=42
+    # ),
 
-    "Random Forest": RandomForestClassifier(
-        n_estimators=200, max_depth=12,
-        class_weight="balanced", random_state=42, n_jobs=-1
-    ),
+    # "Random Forest": RandomForestClassifier(
+    #     n_estimators=200, max_depth=12,
+    #     class_weight="balanced", random_state=42, n_jobs=-1
+    # ),
 
     "XGBoost": XGBClassifier(
         objective="binary:logistic", eval_metric="auc",
